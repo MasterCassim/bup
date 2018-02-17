@@ -1417,7 +1417,7 @@ function render_dsm2018(s, container, event, court, match, colors) {
 			var is_serving = ((server.team_id === team_id) && (server.player_id === player_id));
 			uiu.el(td, 'span', (is_serving ? {
 				style: style + 'color:' + colors.serv + ';'
-			} : { style }), pname);
+			} : { style: style }), pname);
 		});
 	}
 
