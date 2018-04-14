@@ -77,6 +77,14 @@ function is_hidden(el) {
 	return (cs.display === 'none');
 }
 
+function toggle(el) {
+	if (is_hidden(el)) {
+		show(el);
+	} else {
+		hide(el);
+	}
+}
+
 function hide(el) {
 	var style = el.style;
 	if (! is_hidden(el)) {
@@ -327,6 +335,7 @@ return {
 	show_qs: show_qs,
 	text: text,
 	text_qs: text_qs,
+	toggle: toggle,
 	visible: visible,
 	visible_qs: visible_qs,
 	visible_qsa: visible_qsa,
