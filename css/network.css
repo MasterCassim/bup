@@ -1,6 +1,3 @@
-.login_button {
-	position: relative;
-}
 .network_desync_container {
 	position: absolute;
 	top: 16vh;
@@ -19,8 +16,8 @@
 	background-image: url(../icons/desync.svg);
 	background-size: 100% 100%;
 	background-repeat: no-repeat;
-	width: 5em;
-	height: 5em;
+	width: 2em;
+	height: 2em;
 }
 .network_desync_image_preload {
 	background-image: url(../icons/desync.svg);
@@ -39,7 +36,7 @@
 	clear: left;
 	color: red;
 	font-weight: bold;
-	padding: 1em 0 0 0;
+	padding: 0.5em 0 0 0;
 	white-space: pre-wrap;
 }
 
@@ -92,14 +89,6 @@ button > .loading-icon {
 	transform: translate(-50%, -50%);
 }
 
-@media screen and (orientation: portrait) {
-	.settings_login > button,
-	.settings_login > input {
-		display: block;
-		margin: 1em auto 1em auto;
-	}
-}
-
 #setup_network_matches {
 	margin: 0 -1em;
 }
@@ -122,6 +111,8 @@ button > .loading-icon {
 .setup_network_matches_loading > .loading-icon {
 	margin-left: 1.5vmin;
 	display: inline-block;
+	width: 1em;
+	height: 1em;
 }
 #setup_network_matches > .network_error {
 	margin-left: 1.5vmin;
@@ -170,4 +161,12 @@ button > .loading-icon {
 	#setup_network_matches {
 		text-align: center;
 	}
+}
+
+.setup_network_status {
+	display: inline-block;
+	margin-left: 0.8em;
+}
+.setup_network_status > div {
+	display: inline-block;
 }

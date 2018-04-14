@@ -87,6 +87,12 @@ var i18n_frch = {
 'setupsheet:longlabel:present': 'présent',
 'setupsheet:filename': 'ordre de jeu {event_name}.pdf',
 'setupsheet:confirm cancel': 'Jeter des modifications à l\'ordre de jeu?',
+'setupsheet:rank warning': 'Mauvaise équipe: {m0}, {m1}',
+'setupsheet:buli backup': 'Trop de substituts (§9.6 BLO-DB)',
+'setupsheet:buli backup7': 'Remplacer le joueur par 7/4 joueurs réguliers (§9.2 BLO-DB)',
+'setupsheet:too many backups': 'Trop de substituts',
+'setupsheet:3 matches': '{pname} en {count} matchs: {matches}',
+'setupsheet:discipline twice': '{pname} en {m0} et {m1}',
 
 'button:undo': 'Annuler',
 'button:settings': 'Paramètres',
@@ -345,9 +351,6 @@ var i18n_frch = {
 'eventsheet:label|1BL-2017_pdf': '(Bundesliga) feuille de résultats (PDF)',
 'eventsheet:label|2BLN-2017_pdf': '(2. Bundesliga Nord) feuille de résultats (PDF)',
 'eventsheet:label|2BLS-2017_pdf': '(2. Bundesliga Sud) feuille de résultats (PDF)',
-'eventsheet:label|teamlist-1BL-2016': '(Bundesliga) rankings',
-'eventsheet:label|teamlist-2BLN-2016': '(2. Bundesliga Nord) rankings',
-'eventsheet:label|teamlist-2BLS-2016': '(2. Bundesliga Sud) rankings',
 'eventsheet:label|buli2017-minsr': 'Exigence minimale pour les arbitres',
 'eventsheet:label|buli2017-minv': 'Exigences minimales pour le club',
 'eventsheet:label|BL-ballsorten-2016': '(Bundesliga) liste des volants approuvées (2016)',
@@ -612,9 +615,12 @@ var i18n_frch = {
 'receipt:umpire': 'Arbitre:',
 
 'login:header': 'Login {service_name}',
+'login:as': 'Login comme {user}',
 'login:user': 'Nom d\'utilisateur',
 'login:password': 'mot de passe',
 'login:button': 'Identifiez-vous',
+'login:link': 'Formulaire de connexion',
+'login:close': 'Fermer',
 };
 
 /*@DEV*/

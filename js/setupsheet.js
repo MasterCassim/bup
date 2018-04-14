@@ -28,6 +28,13 @@ var MIN_LENGTHS = {
 		f: 4,
 	},
 };
+var MAX_LENGTH = 21;
+var EXTRA_LINES = {
+	'bundesliga-2016': 0,
+	'default': 2,
+	international: 0,
+	nla: 2,
+};
 
 // Current state
 var listed; // Array of teams -> dict of genders -> array of players
@@ -36,6 +43,7 @@ var cfg;
 
 function calc_cur_players(cfg, event) {
 	var res = {};
+
 	GENDERS.forEach(function(gender) {
 		cfg[gender].forEach(function(match_key) {
 			event.matches.forEach(function(m) {
@@ -113,12 +121,9 @@ function calc_listed(event) {
 			var setup = match.setup;
 			setup.teams[team_id].players.forEach(function(p, player_id) {
 				if (event.all_players) {
-					var betterp = utils.find(event.all_players[team_id], function(ap) {
+					p = utils.find(event.all_players[team_id], function(ap) {
 						return ap.name === p.name;
-					});
-					if (betterp) {
-						p = betterp;
-					}
+					}) || p;
 				}
 
 				if (!p.gender) {
@@ -149,6 +154,14 @@ function calc_listed(event) {
 				aps.forEach(_add);
 				team_res.m.sort(_cmp_players);
 				team_res.f.sort(_cmp_players);
+			} else if (aps.every(function(p) {
+				return p.ranking;
+			})) {
+				aps.forEach(_add);
+				team_res.m.sort(_cmp_players);
+				team_res.f.sort(_cmp_players);
+				team_res.m = team_res.m.slice(0, 9);
+				team_res.f = team_res.f.slice(0, 9);
 			}
 			return team_res;
 		});
@@ -439,6 +452,158 @@ function ui_render_init(s) {
 	rerender(s);
 }
 
+function _find_player(all_players, p) {
+	return utils.find(all_players, function(ap) {
+		return ap.name === p.name;
+	});
+}
+
+function check_setup(s, team, team_id, cur_players) {
+	var res = [];
+
+	var match_str = function(match_id, players, rankings) {
+		return match_id + ': ' + players.map(function(p, p_id) {
+			return p.name + ' #' + rankings[p_id];
+		}).join(' / ');
+	};
+
+	var check = function check(match0_id, match1_id, is_doubles) {
+		var calc_rankings = function(players) {
+			return utils.filter_map(players, function(p) {
+				p = _find_player(team.m, p) || _find_player(team.f, p) || p;
+
+				return is_doubles ? (p.ranking_d || p.ranking) : p.ranking;
+			});
+		};
+
+		var match0 = cur_players[match0_id];
+		var match1 = cur_players[match1_id];
+
+		if (!match0) {
+			report_problem.silent_error('setupsheet: Could not find match ' + match0_id);
+			return;
+		}
+		if (!match1) {
+			report_problem.silent_error('setupsheet: Could not find match ' + match1_id);
+			return;
+		}
+
+		var match0_players = match0[team_id];
+		var match1_players = match1[team_id];
+
+		var match0_rankings = calc_rankings(match0_players);
+		var match1_rankings = calc_rankings(match1_players);
+
+		var pcount = is_doubles ? 2 : 1;
+		if ((match0_rankings.length < pcount) || (match1_rankings.length < pcount)) {
+			return; // Incomplete player count or ranking information
+		}
+
+		var sum0 = utils.sum(match0_rankings);
+		var sum1 = utils.sum(match1_rankings);
+		if ((sum0 > sum1) || ((sum0 === sum1) && (utils.min(match0_rankings) > utils.min(match1_rankings)))) {
+			res.push(s._('setupsheet:rank warning', {
+				m0: match_str(match0_id, match0_players, match0_rankings),
+				m1: match_str(match1_id, match1_players, match1_rankings),
+			}));
+		}
+	};
+
+	var _by_players = function(filterp) {
+		var ret = {};
+		for (var match_name in cur_players) {
+			if ((match_name === 'backup') || (match_name === 'present')) {
+				continue;
+			}
+			cur_players[match_name][team_id].forEach(function(p) {
+				if (!filterp(p)) return;
+
+				var matches = ret[p.name];
+				if (!matches) {
+					ret[p.name] = matches = [];
+				}
+				matches.push(match_name);
+			});
+		}
+
+		return ret;
+	};
+
+	var _match_type = function(match_name) {
+		return match_name.replace(/[^a-zA-Z]/g, '');
+	};
+
+	var league_key = s.event.league_key;
+	var backup_counts = GENDERS.map(function(gender) {
+		var backups = cur_players.backup;
+		if (!backups) return 0;
+		return backups[team_id].filter(function(p) {
+			return p.gender === gender;
+		}).length;
+	});
+	var matches_by_pname = _by_players(function() {return true;});
+
+	for (var pname in matches_by_pname) {
+		var pmatches = matches_by_pname[pname];
+		var count = pmatches.length;
+		if (count > 2) {
+			res.push(s._('setupsheet:3 matches', {
+				pname: pname,
+				count: count,
+				matches: pmatches.join(', '),
+			}));
+		}
+
+		pmatches.forEach(function(pm, pm_idx) {
+			for (var i = pm_idx + 1;i < pmatches.length;i++) {
+				if (_match_type(pmatches[i]) === _match_type(pm)) {
+					res.push(s._('setupsheet:discipline twice', {
+						pname: pname,
+						m0: pm,
+						m1: pmatches[i],
+					}));
+				}
+			}
+		});
+	}
+
+	if (eventutils.is_bundesliga(league_key)) {
+		check('1.HE', '2.HE', false);
+		check('1.HD', '2.HD', true);
+
+		// §9.6 BLO-DB
+		if ((backup_counts[0] > 2) || (backup_counts[1] > 2)) {
+			res.push(s._('setupsheet:buli backup'));
+		}
+
+		// §9.2 BLO-DB
+		var player_counts_by_gender = GENDERS.map(function(gender) {
+			var mbp = _by_players(function(p) {
+				p = _find_player(team.m, p) || _find_player(team.f, p) || p;
+				return p.gender === gender;
+			});
+			return Object.keys(mbp).length;
+		});
+		if (((player_counts_by_gender[0] >= 7) && (backup_counts[0] > 0)) || ((player_counts_by_gender[1] >= 4) && (backup_counts[1] > 0))) {
+			res.push(s._('setupsheet:buli backup7'));
+		}
+	} else if (eventutils.is_german8(league_key)) {
+		check('1.HE', '2.HE', false);
+		check('2.HE', '3.HE', false);
+		check('1.HD', '2.HD', true);
+		if ((backup_counts[0] > 1) || (backup_counts[1] > 1)) {
+			res.push(s._('setupsheet:too many backups'));
+		}
+	} else if (!utils.includes(['NLA-2017', 'international-2017'], league_key)) {
+		// NLA: crazy separate system
+		// international: no checks necessary, every discipline once
+
+		report_problem.silent_error('Unsupported league for checks: ' + league_key);
+	}
+
+	return res;
+}
+
 function rerender(s) {
 	var is_buli = eventutils.is_bundesliga(s.event.league_key);
 	listed.forEach(function(team, team_id) {
@@ -536,6 +701,14 @@ function rerender(s) {
 				'role': 'submit',
 			}, s._('setupsheet:add'));
 		});
+
+		check_setup(s, team, team_id, cur_players).forEach(function(errmsg) {
+			var tr = uiu.el(tbody, 'tr');
+			uiu.el(tr, 'td', {
+				'class': 'setupsheet_warning',
+				colspan: (1 + cfg.m.length),
+			}, errmsg);
+		});
 	});
 
 	render_svg(s);
@@ -584,16 +757,41 @@ function fill_text(container, fill_id, text) {
 	uiu.text(el, text);
 }
 
+function calc_linecounts(player_counts, minlens, maxlen, empty_lines) {
+	var res = {};
+	GENDERS.forEach(function(gender) {
+		res[gender] = Math.max(player_counts[gender], minlens[gender]);
+	});
+	var changed = true;
+	while (changed) {
+		changed = false;
+		GENDERS.forEach(function(gender) {
+			if ((res.m + res.f < maxlen) && (res[gender] < player_counts[gender] + empty_lines)) {
+				res[gender]++;
+				changed = true;
+			}
+		});
+	}
+	return res;
+}
+
 function fill_svg(s, svg_root, sheet_name, team_id)  {
-	var is_buli = eventutils.is_bundesliga(s.event.league_key);
-	fill_text(svg_root, 'tournament_name', s.event.tournament_name || '');
-	fill_text(svg_root, 'event_name', s.event.event_name);
+	var event = s.event;
+	var is_buli = eventutils.is_bundesliga(event.league_key);
+	fill_text(svg_root, 'tournament_name', event.tournament_name || '');
+	fill_text(svg_root, 'event_name', event.event_name);
 	fill_text(svg_root, 'setup_desc', s._('setupsheet:setup|' + team_id));
-	fill_text(svg_root, 'team_name', s.event.team_names[team_id]);
+	fill_text(svg_root, 'team_name', event.team_names[team_id]);
+	fill_text(svg_root, 'date', event.date);
 
 	var yoffset = 0;
+	var line_counts = calc_linecounts({
+		m: listed[team_id].m.length,
+		f: listed[team_id].f.length,
+	}, MIN_LENGTHS[sheet_name], MAX_LENGTH, EXTRA_LINES[sheet_name]);
+
 	GENDERS.forEach(function(gender) {
-		var num_lines = Math.max(MIN_LENGTHS[sheet_name][gender], listed[team_id][gender].length);
+		var num_lines = line_counts[gender];
 		var g_cfg = cfg[gender];
 
 		var template = uiu.qs('g[data-fill-id="template_' + gender + '"]', svg_root);
@@ -733,6 +931,10 @@ function hide() {
 }
 
 function ask_hide_and_back() {
+	if (!cfg) {
+		return hide_and_back();
+	}
+
 	var old_cur_players = calc_cur_players(cfg, state.event);
 	var old_listed = calc_listed(state.event);
 
@@ -788,8 +990,10 @@ return {
 	jspdf_loaded: jspdf_loaded,
 	// Tests only
 	/*@DEV*/
-	calc_config: calc_config,
 	available_players: available_players,
+	calc_config: calc_config,
+	calc_linecounts: calc_linecounts,
+	check_setup: check_setup,
 	/*/@DEV*/
 };
 
@@ -807,6 +1011,7 @@ if ((typeof module !== 'undefined') && (typeof require !== 'undefined')) {
 	var network = require('./network');
 	var printing = require('./printing');
 	var refmode_referee_ui = null; // break cycle, should be require('./refmode_referee_ui');
+	var report_problem = null; // break cycle, should be require('./report_problem');
 	var render = require('./render');
 	var settings = require('./settings');
 	var svg2pdf = require('./svg2pdf');

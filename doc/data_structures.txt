@@ -39,7 +39,8 @@ league_key      ID of the league being played.
 
                 The year is the first year that the specific ruleset was implemented in.
                 If the rules and descriptions of the league don't change (at least as far as bup is concerned), the same league_key can be used for later seasons.
-counting        Default counting scheme. Implicitly set by league_key. Set this for events without league_key.
+counting        Default counting scheme. Implicitly set by league_key.
+                Set this for events without league_key.
                 Available values:
                   "3x21"       BWF since 2016
                   "5x11_15"    BWF 2016 Experiment Option 1 (5x11 until max. 15)
@@ -201,6 +202,8 @@ is_doubles*        Boolean key. false => singles, true => mixed/doubles
 counting*          Scoring system.
                    See the documentation on event for possible values.
                    Can be left out if the league_key or counting property of the event is set.
+date               Human-readable official day of match, e.g. "12.3.2017".
+                   Copied over from the date propert of the event.
 umpire_name        Name of the umpire assigned to this match (or the last one who touched it).
 service_judge_name Name of the service judge assigned to this match.
 court_id           ID of the court this match is played on.

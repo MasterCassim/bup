@@ -56,7 +56,7 @@ var i18n_en = {
 'network:match finished': 'Match {match} already finished ({score})!',
 'network:fetching courts': 'Fetching court list ...',
 
-'editevent:link': 'Edit event',
+'editevent:link': 'edit event',
 'editevent:back': 'Back',
 'editevent:add manual m': 'Other player (m) ..',
 'editevent:add manual f': 'Other player (f) ..',
@@ -70,7 +70,7 @@ var i18n_en = {
 'setupsheet:header|f': 'Women',
 'setupsheet:header:backup': 'B',
 'setupsheet:header:present': 'P',
-'setupsheet:link': 'Setup sheet',
+'setupsheet:link': 'setup sheet',
 'setupsheet:add': 'add player',
 'setupsheet:cancel': 'Cancel',
 'setupsheet:save': 'Save',
@@ -87,6 +87,12 @@ var i18n_en = {
 'setupsheet:longlabel:present': 'present',
 'setupsheet:filename': 'Setup sheets {event_name}.pdf',
 'setupsheet:confirm cancel': 'Discard changes to the setup?',
+'setupsheet:rank warning': 'Invalid setup: {m0}, {m1}',
+'setupsheet:buli backup': 'Too many substitutes (§9.6 BLO-DB)',
+'setupsheet:buli backup7': 'substitutes not allowed with 7/4 regulars (§9.2 BLO-DB)',
+'setupsheet:too many backups': 'Too many substitutes',
+'setupsheet:3 matches': '{pname} in {count} matches: {matches}',
+'setupsheet:discipline twice': '{pname} in {m0} and {m1}',
 
 'button:undo': 'Undo',
 'button:settings': 'Configuration',
@@ -186,7 +192,7 @@ var i18n_en = {
 'settings:Custom match details': 'custom match details ...',
 'settings:Network statistics': 'network statistics',
 'settings:Order link': 'match order',
-'settings:Export link': 'Export',
+'settings:Export link': 'export',
 'settings:New match': 'Create match',
 'settings:Singles': 'Singles',
 'settings:Doubles': 'Doubles',
@@ -348,9 +354,6 @@ var i18n_en = {
 'eventsheet:label|1BL-2017_pdf': 'PDF result report sheet',
 'eventsheet:label|2BLN-2017_pdf': 'PDF result report sheet',
 'eventsheet:label|2BLS-2017_pdf': 'PDF result report sheet',
-'eventsheet:label|teamlist-1BL-2016': '(German 1. Bundesliga) team details',
-'eventsheet:label|teamlist-2BLN-2016': '(German 2. Bundesliga North) team details',
-'eventsheet:label|teamlist-2BLS-2016': '(German 2. Bundesliga South) team details',
 'eventsheet:label|buli2017-minsr': 'minimum requirements form for umpires',
 'eventsheet:label|buli2017-minv': 'minimum requirements form for clubs',
 'eventsheet:label|BL-ballsorten-2016': '(German 1./2. Bundesliga) list of approved shuttles (2016)',
@@ -616,9 +619,13 @@ var i18n_en = {
 'receipt:umpire': 'Umpire:',
 
 'login:header': 'Login {service_name}',
+'login:as': 'Sign in as {user}',
 'login:user': 'user name',
 'login:password': 'password',
 'login:button': 'Sign in',
+'login:link': 'Log in as ...',
+'login:close': 'Close',
+
 };
 
 /*@DEV*/

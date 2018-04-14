@@ -20,7 +20,7 @@ const BTDE_LEAGUE_NAME = {
 };
 
 
-function _render_login(res, message) {
+function _render_login(res, message, username) {
 	httpd_utils.render_html(res, `<!DOCTYPE html>
 <html lang="de">
 <head>
@@ -42,9 +42,11 @@ label {display: block;margin: 0.5em 0;}
 <h2>Login</h2>
 <form method="post">
 
-` + (message ? ('<p class="fehler">' + message + '</p>') : '') + `
+` + (message ? ('<p class="fehler">' + httpd_utils.encode_html(message) + '</p>') : '') + `
 
-<label>Benutzername: <input name="benutzername" type="text" placeholder="Benutzername" autofocus="autofocus"></label>
+<label>Benutzername: <input name="benutzername" type="text" placeholder="Benutzername" autofocus="autofocus"` +
+	(username ? ' value="' + httpd_utils.encode_html(username) + '"' : '') +
+`></label>
 <label>Passwort: <input name="passwort" type="password" placeholder="Passwort"></label>
 <button>anmelden</button>
 </form>
@@ -66,6 +68,28 @@ function _btde_players_string(players) {
 	}).join('~');
 }
 
+function options_middleware(real_handler) {
+	return (req, res, pathname) => {
+		const m = /^\/delay=([0-9]+)(\/.*)$/.exec(pathname);
+		if (m) {
+			req.btde_mock_delay = parseInt(m[1]);
+			req.btde_mock_options_url = '/delay=' + m[1];
+			pathname = m[2];
+		}
+		return real_handler(req, res, pathname);
+	};
+}
+
+function delayed(real_handler) {
+	return (req, res, pathname) => {
+		if (req.btde_mock_delay) {
+			setTimeout(real_handler, req.btde_mock_delay, req, res, pathname);
+			return;
+		}
+		real_handler(req, res, pathname);
+	};
+}
+
 class BTDEMock {
 
 constructor() {
@@ -80,18 +104,21 @@ constructor() {
 		password: '123456',
 	}];
 	this.data = {};
-	this.handler = httpd_utils.multi_handler([
-		(...a) => this.write_handler(...a),
-		httpd_utils.redirect_handler('/', 'ticker/login/'),
-		(...a) => this.login_handler(...a),
-		(...a) => this.logout_handler(...a),
-		(...a) => this.start_handler(...a),
+	this.handler = options_middleware(httpd_utils.multi_handler([
 		static_handler.file_handler('/ticker/bup/', miniserver.ROOT_DIR, 'bup.html'),
+		delayed(httpd_utils.multi_handler([
+			(...a) => this.write_handler(...a),
+			httpd_utils.redirect_handler('/', 'ticker/login/'),
+			(...a) => this.login_handler(...a),
+			(...a) => this.logout_handler(...a),
+			(...a) => this.start_handler(...a),
 
-		(req, res, pathname) => {
-			console.log('BTDE mock: unhandled ', pathname);
-		},
-	]);
+			(req, res, pathname) => {
+				console.log('BTDE mock: error 404 ' + pathname);
+				return httpd_utils.err(res, 404);
+			},
+		])),
+	]));
 }
 
 fetch_data(user, callback) {
@@ -118,15 +145,21 @@ fetch_data(user, callback) {
 	}, callback);
 }
 
-login_handler(req, res, pathname) {
-	const users = this.users;
-	if (! ((pathname === '/ticker/login/') || (pathname === '/ticker/login/index.php'))) return 'unhandled';
+do_login(req, res) {
+	this.get_user(req, (err, user_info) => {
+		if (err) return httpd_utils.send_err(res, err);
 
-	if (req.method === 'POST') {
+		if (user_info) {
+			// When the user is already logged-in, login does nothing.
+			// This is of course totally brain-dead since it prevents logging in as another user.
+			// But we're just reproducing the real btde behavior here.
+			return httpd_utils.redirect(res, 'start.php');
+		}
+
 		httpd_utils.read_post(req, (err, post_data) => {
-			const u = bup.utils.find(users, su => su.name === post_data.benutzername);
+			const u = bup.utils.find(this.users, su => su.name === post_data.benutzername);
 			if (!u || (u.password !== post_data.passwort)) {
-				return _render_login(res, 'Der Benutzername und das Passwort stimmen nicht überein.');
+				return _render_login(res, 'Der Benutzername und das Passwort stimmen nicht überein.', post_data.benutzername);
 			}
 
 			// Successful login: set cookie
@@ -135,7 +168,14 @@ login_handler(req, res, pathname) {
 				'Set-Cookie': 'btde_mock_session=' + encodeURIComponent(cookieval),
 			});
 		});
-		return;
+	});
+}
+
+login_handler(req, res, pathname) {
+	if (! ((pathname === '/ticker/login/') || (pathname === '/ticker/login/index.php'))) return 'unhandled';
+
+	if (req.method === 'POST') {
+		return this.do_login(req, res);
 	}
 
 	const cookies = httpd_utils.parse_cookies(req);
@@ -280,7 +320,7 @@ require_user(req, res, callback) {
 		if (err) return httpd_utils.send_err(res, err);
 
 		if (! user_info) {
-			return httpd_utils.redirect(res, '/btde/ticker/login/');
+			return httpd_utils.redirect(res, '/btde' + (req.btde_mock_options_url || '') + '/ticker/login/');
 		}
 
 		return callback(err, user_info, user_data);

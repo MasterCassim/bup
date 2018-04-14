@@ -1,5 +1,6 @@
 'use strict';
 
+const assert = require('assert');
 const async = require('async');
 const child_process = require('child_process');
 const fs = require('fs');
@@ -23,25 +24,25 @@ function transform_file(in_fn, out_fn, func, cb) {
 
 		content = func(content);
 
-		fs.writeFile(out_fn, content, 'utf8', function(err) {
+		fs.writeFile(out_fn, content, 'utf8', (err) => {
 			cb(err);
 		});
 	});
 }
 
 function transform_files(in_files, out_dir, func, cb) {
-	async.map(in_files, function(fn, cb) {
+	async.map(in_files, (fn, cb) => {
 		const out_fn = path.join(out_dir, path.basename(fn));
-		transform_file(fn, out_fn, func, function(err) {
+		transform_file(fn, out_fn, func, (err) => {
 			cb(err, out_fn);
 		});
-	}, function(err, out_files) {
+	}, (err, out_files) => {
 		return cb(err, out_files);
 	});
 }
 
 function ensure_mkdir(path, cb) {
-	fs.mkdir(path, 0o777, function(err) {
+	fs.mkdir(path, 0o777, (err) => {
 		if (err && err.code == 'EEXIST') {
 			return cb(null);
 		}
@@ -54,14 +55,11 @@ function ensure_mkdir(path, cb) {
 
 function uglify(js_files, jsdist_fn, cb) {
 	const args = [];
-	args.push('-p');
-	args.push('relative');
+	assert(!/[']/.test(jsdist_fn));
 	args.push('--source-map');
-	args.push(jsdist_fn + '.map');
-	args.push('--source-map-url');
-	args.push(path.basename(jsdist_fn) + '.map');
+	args.push('filename=\'' + jsdist_fn + '.map\',url=\'' + path.basename(jsdist_fn) + '.map\',base=dist/bup');
+	args.push();
 	args.push('--mangle');
-	args.push('mangle_yes');
 	args.push('--compress');
 	args.push('-o');
 	args.push(jsdist_fn);
@@ -83,8 +81,8 @@ function uglify(js_files, jsdist_fn, cb) {
 
 function convert_js(version, js_files, sources_dir, jsdist_fn, cb) {
 	async.waterfall([
-		function(cb) {
-			transform_files(js_files, sources_dir, function(js) {
+		(cb) => {
+			transform_files(js_files, sources_dir, (js) => {
 				js = js.replace(
 					/(var\s+bup_version\s*=\s*')[^']*(';)/g,
 					function(m, g1, g2) {
@@ -187,6 +185,7 @@ function main() {
 	const jsdist_fn = path.join(dist_dir, 'bup.dist.js');
 	const cssdist_fn = path.join(dist_dir, 'bup.dist.css');
 	const version_fn = path.join(dist_dir, 'VERSION');
+	const version2_fn = path.join(dist_dir, 'VERSION.txt');
 
 	function transform_html(html) {
 		html = html.replace(/<!--@DEV-->[\s\S]*?<!--\/@DEV-->/g, '');
@@ -222,13 +221,18 @@ function main() {
 				cb(err, version);
 			});
 		},
-		function(version, cb) {
-			fs.writeFile(version_fn, version, {encoding: 'utf8'}, function(err) {
+		(version, cb) => {
+			fs.writeFile(version_fn, version, {encoding: 'utf8'}, (err) => {
 				cb(err, version);
 			});
 		},
-		function(version, cb) {
-			fs.readFile(html_in_fn, 'utf8', function(err, content) {
+		(version, cb) => {
+			fs.writeFile(version2_fn, version, {encoding: 'utf8'}, (err) => {
+				cb(err, version);
+			});
+		},
+		(version, cb) => {
+			fs.readFile(html_in_fn, 'utf8', (err, content) => {
 				cb(err, version, content);
 			});
 		},

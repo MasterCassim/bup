@@ -1,3 +1,30 @@
+check whether we use broetli compression for static assets
+
+dmode show error message when errors for longer than 30s
+dmode Siegerfoto with logos instead/on top of team names
+dmode automatically switch to Siegerfoto after end
+dmode half display
+dmode realistic court(s)
+
+buphub kill conns earlier
+implement timeout
+
+improve login
+	test displaymode login
+	dmode when logged out: does it show the form?
+
+player import in rlw should include backup players
+
+blue btde dmode?
+umpire pro dmode but with time
+
+Anzeige mit Seiten (wie für Schiedsrichter)
+	-> Markus Schwendtner
+
+shuttle stats
+
+btde-mock: 2 requests if not logged in (should be one)
+
 selectevent module
 	download database automatically (lock to prevent multi-download)
 	use download_lib in debmlist
@@ -11,6 +38,9 @@ selectevent module
 	if courtspot: ask for passcode
 	allow on referee
 	checkbox on referee: store event permanently (do not load from clients)
+	ticker to courtspot from referee
+	serviceover
+	-> Benedikt
 
 resume: warning if local copy is ahead of remote match
 	-> Olli
@@ -19,15 +49,7 @@ disable bupabfrage when going into match
 
 tunnel error reports through courtspot
 
-improve login
-	add a login as ... link
-	displaymode login
-	offer historic logins
-		for new login
-		for relogin
-	automatically log in upon load if necessary (with last-saved user name)
-		-> Dario
-	dmode hide button: test & fix
+displaymode: add spacing option
 
 check reload button graphic on Firefox etc.
 doc f11 (+Android +iOS) -> Markus Schwendtner
@@ -70,7 +92,9 @@ order @wdmu19
 	-> Günter Klützke
 	-> Peter Veit
 
+find uused CSS rules
 
+separate settings and main screen
 import tournament name (example: https://www.turnier.de/sport/tournament.aspx?id=DB5AB88F-98B5-4B52-B10E-D256C7B8A8B4)
 https://www.turnier.de/sport/tournament.aspx?id=DB5AB88F-98B5-4B52-B10E-D256C7B8A8B4 : no spaces behind match names please
 
@@ -104,7 +128,9 @@ d halfcourt (for bundesliga finals)
 dads in intervals -> Jan
 
 refmode redesign UI for change dialogs
+refmode highlight if R pressed
 refmode make more efficient
+refmode if new event show diffs
 refmode remove flickers
 refmode verify that push mode is not active by default
 refmode use WebRTC
@@ -179,7 +205,7 @@ de-jquerify network.request
 2felder: testen mit mac-Auflösung (@800x600)
 2courts: add teammatch score
 editevent crashes after mo -> mail Werner Durow
-dads countdown to time
+dads countdown to time ("DE in 10 Minuten")
 
 login in displaymode
 dads: show displaymode -> Steffen Becker
@@ -241,6 +267,9 @@ abt fall-back for btde and CourtSpot
 	report to abt in parallel
 	configure abt address
 
+open a secondary window (display window) from the same source
+	&client in the URL
+	postmessage or so?
 
 test right-click on all links
 	-> Mail Jan
@@ -308,6 +337,7 @@ error reporting courtspot
 open scoresheets link in new tab
 
 *_pause displays: synchronize clocks
+animation like https://www.youtube.com/watch?v=fxXhkxyzGr4
 
 https://developers.google.com/web/fundamentals/app-install-banners/
 
@@ -1122,7 +1152,14 @@ render in transparent windows -> Dieter Gläßer
 drucken wie BTP als Server (alles|bei Problemen|nie)
 search for third argument of uiu.el(): {'class': 'foobar'}, replace with more modern version
 Button zur Pause bei 11 wenn Seiten wechseln? -> Jörg Hupertz
+3x7 -> Markus Schwendtner
+
+@maybe
+automatically log in upon load if necessary (with last-saved user name)
 
 @tvr:
 check Pi font
-bring USB cables + adapters
+check Pi colors
+bring USB batteries
+prepare a Pi for beamer
+evaluate Trittau color

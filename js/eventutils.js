@@ -169,6 +169,7 @@ function annotate(s, event) {
 		team_competition: event.team_competition,
 		away_first: event.away_first,
 		counting: event.counting,
+		date: event.date,
 	};
 	if (league_key && !event.counting) {
 		props.counting = default_counting(league_key);
@@ -336,6 +337,12 @@ function setups_eq(e1, e2) {
 	}
 
 	return true;
+}
+
+// I this a league with 2 MD, 3 MS, 1 WS, 1 XD, 1 WD, with the typical German regulations for doubles setup?
+function is_german8(league_key) {
+	return NRW2016_RE.test(league_key) || utils.includes([
+		'RLW-2016', 'RLN-2016', 'RLSOS-2017', 'RLSOO-2017', 'bayern-2018', 'OBL-2017'], league_key);
 }
 
 function get_min_pause(league_key) {
@@ -576,6 +583,7 @@ return {
 	default_counting: default_counting,
 	umpire_pay: umpire_pay,
 	name_by_league: name_by_league,
+	is_german8: is_german8,
 	// Testing only
 	/*@DEV*/
 	get_min_pause: get_min_pause,

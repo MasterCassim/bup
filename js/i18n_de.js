@@ -87,6 +87,12 @@ var i18n_de = {
 'setupsheet:longlabel:present': 'Anwesend',
 'setupsheet:filename': 'Aufstellungszettel {event_name}.pdf',
 'setupsheet:confirm cancel': 'Änderungen an der Aufstellung verwerfen?',
+'setupsheet:rank warning': 'Falsche Aufstellung: {m0}, {m1}',
+'setupsheet:buli backup': 'Zu viele Ersatzspieler (§9.6 BLO-DB)',
+'setupsheet:buli backup7': 'Ersatzspieler obwohl 7/4 reguläre Spieler/innen (§9.2 BLO-DB)',
+'setupsheet:too many backups': 'Zu viele Ersatzspieler/innen',
+'setupsheet:3 matches': '{pname} in {count} Spielen: {matches}',
+'setupsheet:discipline twice': '{pname} in {m0} und {m1}',
 
 'button:undo': 'Rückgängig',
 'button:settings': 'Konfiguration',
@@ -349,9 +355,6 @@ var i18n_de = {
 'eventsheet:label|1BL-2015': 'Spielbericht (2015)',
 'eventsheet:label|2BLN-2015': 'Spielbericht (2015)',
 'eventsheet:label|2BLS-2015': 'Spielbericht (2015)',
-'eventsheet:label|teamlist-1BL-2016': 'Mannschaftsunterlagen',
-'eventsheet:label|teamlist-2BLN-2016': 'Mannschaftsunterlagen',
-'eventsheet:label|teamlist-2BLS-2016': 'Mannschaftsunterlagen',
 'eventsheet:label|buli2017-minsr': 'Mindestanforderungen Schiedsrichter',
 'eventsheet:label|buli2017-minv': 'Mindestanforderungen Verein',
 'eventsheet:label|BL-ballsorten-2016': 'Zugelassene Bälle',
@@ -616,9 +619,12 @@ var i18n_de = {
 'receipt:umpire': 'Schiedsrichter:',
 
 'login:header': 'Login {service_name}',
+'login:as': 'Login als {user}',
 'login:user': 'Benutzername',
 'login:password': 'Passwort',
 'login:button': 'Einloggen',
+'login:link': 'Login als ...',
+'login:close': 'Schließen',
 };
 
 /*@DEV*/
