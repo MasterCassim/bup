@@ -24,5 +24,7 @@
 	"url": "https://raw.githubusercontent.com/stacktracejs/stacktrace.js/master/dist/stacktrace.min.js"
 }, {
 	"url": "https://raw.githubusercontent.com/stacktracejs/stacktrace.js/master/dist/stacktrace.min.js.map"
+}, {
+	"url": "https://raw.githubusercontent.com/eligrey/FileSaver.js/master/src/FileSaver.js"
 }
 ]
