@@ -35,7 +35,7 @@ dist: cleandist ## Create distribution files
 
 	node div/make_dist.js . dist/bup/ dist/bup/sources
 
-	cp /libs/FileSaver.js dist/bup/FileSaver.js
+	cp libs/FileSaver.js dist/bup/FileSaver.js
 	cp libs/jspdf.min.js dist/bup/jspdf.dist.js
 	cp libs/jszip.min.js dist/bup/jszip.min.js
 	cp libs/pdfform.minipdf.dist.js dist/bup/pdfform.minipdf.dist.js
