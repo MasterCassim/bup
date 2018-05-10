@@ -390,8 +390,10 @@ function render_tournament_overview_new(s, container, event) {
 	var tbody = uiu.el(table, 'tbody');
 
 	var courtIdToLabel = {};
+	var i = 0;
 
-	event.courts.forEach(function(court, idx) {
+	event.courts.forEach(function(court) {
+		var idx = i++;
 		courtIdToLabel[court.court_id] = {
         	label: court.label
     	};
@@ -447,7 +449,18 @@ function render_tournament_overview_new(s, container, event) {
 		}
 	});
 
-	event.matches.forEach(function(match, idx) {
+    var tr = uiu.el(tbody, 'tr', {
+        style: (
+            'background:' + ((i++ % 2 === 0) ? colors.bg : colors.bg3) + ';' +
+            'color:' + colors.fg + ';'
+        ),
+    });
+    uiu.el(tr, 'td', {
+    	style: 'colspan: 7;align: center;'
+	}, 'Anstehende Spiele');
+
+	event.matches.forEach(function(match) {
+		var idx = i++;
 		var court_id = match.setup.court_id;
 		var match_id = match.setup.match_id;
 
@@ -473,6 +486,19 @@ function render_tournament_overview_new(s, container, event) {
 		}, _match_name(setup));
 		_tournament_overview_render_players(tr, setup.teams[0].players);
 		_tournament_overview_render_players(tr, setup.teams[1].players);
+
+        uiu.el(tr, 'td', {
+            'class': 'd_to_score',
+            style: 'border-color:' + colors.border,
+        });
+        uiu.el(tr, 'td', {
+            'class': 'd_to_score',
+            style: 'border-color:' + colors.border,
+        });
+        uiu.el(tr, 'td', {
+            'class': 'd_to_score',
+            style: 'border-color:' + colors.border,
+        });
 	});
 }
 
