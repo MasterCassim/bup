@@ -476,7 +476,6 @@ function render_tournament_overview_new(s, container, event) {
     });
 
     var not_announced_matches = event.matches.filter(function(match) {
-        var idx = i++;
         var court_id = match.setup.court_id;
         var match_id = match.setup.match_id;
 
@@ -495,7 +494,11 @@ function render_tournament_overview_new(s, container, event) {
     if (not_announced_matches.length > 0) {
         uiu.el(tr, 'td', {
             'colspan': 7,
-            'align': 'center'
+            'align': 'center',
+            style: (
+                'background:' + ((i++ % 2 === 0) ? colors.bg : colors.bg3) + ';' +
+                'color:' + colors.fg + ';'
+            ),
         }, 'Anstehende Spiele');
 
         for (var index = CURRENT_INDEX; index < CURRENT_INDEX + 2 && index < CURRENT_INDEX + not_announced_matches.length; index++) {
