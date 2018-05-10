@@ -2391,7 +2391,11 @@ function update(err, s, event) {
 	// If nothing has changed we can skip painting
 	var cur_event_hash = hash(s.settings, event);
 	if (utils.deep_equal(cur_event_hash, _last_painted_hash)) {
-		return;
+		if (style === 'tournament_overview_new' && Math.floor((Date.now() - LAST_RUN) / 1000) > 20) {
+			// do not return for overview_new if elapsed time is too big
+		} else {
+            return;
+        }
 	}
 
 	var ads_container = uiu.qs('.d_ads');
