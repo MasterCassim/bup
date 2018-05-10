@@ -491,6 +491,7 @@ var i18n_en = {
 'displaymode:style': 'style:',
 'displaymode|top+list': 'current/list',
 'displaymode|dsm2018': 'DSM2018 (VK)',
+'displaymode|dsm2018-small': 'DSM2018 (VK) - Small',
 'displaymode|oncourt': 'court score',
 'displaymode|international': 'international',
 'displaymode|teamcourt': 'team display',

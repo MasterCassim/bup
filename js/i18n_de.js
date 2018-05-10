@@ -491,6 +491,8 @@ var i18n_de = {
 
 'displaymode:style': 'Ansicht:',
 'displaymode|top+list': 'Aktuell/Liste',
+'displaymode|dsm2018': 'DSM2018 (VK)',
+'displaymode|dsm2018-small': 'DSM2018 (VK) - Small',
 'displaymode|oncourt': 'Feld-Punktzahl',
 'displaymode|international': 'International',
 'displaymode|teamcourt': 'Mannschaftskampf',
