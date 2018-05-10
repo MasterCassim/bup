@@ -1,6 +1,9 @@
 'use strict';
 var displaymode = (function() {
 
+var LAST_RUN = Date.now();
+var CURRENT_INDEX = 0;
+
 var ALL_STYLES = [
 	'dsm2018',
     'dsm2018-small',
@@ -383,6 +386,13 @@ function _tournament_overview_render_players(tr, players) {
 }
 
 function render_tournament_overview_new(s, container, event) {
+	var elapsedSeconds = Math.floor((Date.now() - LAST_RUN) / 1000);
+
+	if (elapsedSeconds > 20) {
+		CURRENT_INDEX++;
+		LAST_RUN = Date.now();
+	}
+
 	var max_game_count = _calc_max_games(event);
 	var colors = calc_colors(s.settings, event);
 
@@ -401,13 +411,22 @@ function render_tournament_overview_new(s, container, event) {
 		var match = _match_by_court(event, court);
 		var nscore = (match ? match.network_score : 0) || [];
 
+		var isUpcoming = false;
+        if (!match) {
+            var upcoming_matches = event.matches.filter(function(match) { return match.setup.court_id === court.court_id; });
+            if (upcoming_matches.length === 1) {
+                match = upcoming_matches[0];
+                isUpcoming = true;
+            }
+        }
+
 		var tr = uiu.el(tbody, 'tr', {
 			style: (
 				'background:' + ((idx % 2 === 0) ? colors.bg : colors.bg3) + ';' +
 				'color:' + colors.fg + ';'
 			),
 		});
-		uiu.el(tr, 'td', 'd_to_court', court.label || compat.courtnum(court.id));
+		uiu.el(tr, 'td', 'd_to_court', (isUpcoming ? "*" : "") + (court.label || compat.courtnum(court.id)));
 
 		if (match) {
             courtIdToLabel[court.court_id].match_id = match.setup.match_id;
@@ -455,52 +474,67 @@ function render_tournament_overview_new(s, container, event) {
             'color:' + colors.fg + ';'
         ),
     });
-    uiu.el(tr, 'td', {
-    	'colspan': 7,
-		'align': 'center'
-	}, 'Anstehende Spiele');
 
-	event.matches.forEach(function(match) {
-		var idx = i++;
-		var court_id = match.setup.court_id;
-		var match_id = match.setup.match_id;
+    var not_announced_matches = event.matches.filter(function(match) {
+        var idx = i++;
+        var court_id = match.setup.court_id;
+        var match_id = match.setup.match_id;
 
-		if (courtIdToLabel[court_id].match_id === match_id) {
-			// Match is already active
-			return ;
-		}
+        if (courtIdToLabel[court_id].match_id === match_id) {
+            // Match is already active
+            return false;
+        }
 
-        var tr = uiu.el(tbody, 'tr', {
-            style: (
-                'background:' + ((idx % 2 === 0) ? colors.bg : colors.bg3) + ';' +
-                'color:' + colors.fg + ';'
-            ),
-        });
-        uiu.el(tr, 'td', 'd_to_court', courtIdToLabel[court_id].label || compat.courtnum(court_id));
+        return true;
+    });
 
-		var setup = match.setup;
-		uiu.el(tr, 'td', {
-			'class': 'd_to_matchname',
-			style: (
-				'color:' + colors.fg2 + ';'
-			),
-		}, _match_name(setup));
-		_tournament_overview_render_players(tr, setup.teams[0].players);
-		_tournament_overview_render_players(tr, setup.teams[1].players);
-
-        uiu.el(tr, 'td', {
-            'class': 'd_to_score',
-            style: 'border-color:' + colors.border,
-        });
-        uiu.el(tr, 'td', {
-            'class': 'd_to_score',
-            style: 'border-color:' + colors.border,
-        });
-        uiu.el(tr, 'td', {
-            'class': 'd_to_score',
-            style: 'border-color:' + colors.border,
-        });
+    not_announced_matches.sort(function(m1, m2) {
+		return courtIdToLabel[m1.setup.court_id].label - courtIdToLabel[m2.setup.court_id].label;
 	});
+
+    if (not_announced_matches.length > 0) {
+        uiu.el(tr, 'td', {
+            'colspan': 7,
+            'align': 'center'
+        }, 'Anstehende Spiele');
+
+        for (var index = CURRENT_INDEX; i < CURRENT_INDEX + 2 && i < CURRENT_INDEX + not_announced_matches.length; i++) {
+        	var match = not_announced_matches[index % not_announced_matches.length];
+            var idx = i++;
+            var court_id = match.setup.court_id;
+
+            var tr = uiu.el(tbody, 'tr', {
+                style: (
+                    'background:' + ((idx % 2 === 0) ? colors.bg : colors.bg3) + ';' +
+                    'color:' + colors.fg + ';'
+                ),
+            });
+            uiu.el(tr, 'td', 'd_to_court', courtIdToLabel[court_id].label || compat.courtnum(court_id));
+
+            var setup = match.setup;
+            uiu.el(tr, 'td', {
+                'class': 'd_to_matchname',
+                style: (
+                    'color:' + colors.fg2 + ';'
+                ),
+            }, _match_name(setup));
+            _tournament_overview_render_players(tr, setup.teams[0].players);
+            _tournament_overview_render_players(tr, setup.teams[1].players);
+
+            uiu.el(tr, 'td', {
+                'class': 'd_to_score',
+                style: 'border-color:' + colors.border,
+            });
+            uiu.el(tr, 'td', {
+                'class': 'd_to_score',
+                style: 'border-color:' + colors.border,
+            });
+            uiu.el(tr, 'td', {
+                'class': 'd_to_score',
+                style: 'border-color:' + colors.border,
+            });
+        }
+    }
 }
 
 function render_tournament_overview(s, container, event) {
