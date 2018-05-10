@@ -499,7 +499,7 @@ function render_tournament_overview_new(s, container, event) {
                 'background:' + ((i++ % 2 === 0) ? colors.bg : colors.bg3) + ';' +
                 'color:' + colors.fg + ';'
             ),
-        }, 'Anstehende Spiele');
+        }, 'Anstehende Spiele (' + not_announced_matches.length + ')');
 
         for (var index = CURRENT_INDEX; index < CURRENT_INDEX + 2 && index < CURRENT_INDEX + not_announced_matches.length; index++) {
         	var match = not_announced_matches[index % not_announced_matches.length];
