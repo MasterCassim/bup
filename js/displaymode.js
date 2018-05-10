@@ -388,7 +388,7 @@ function _tournament_overview_render_players(tr, players) {
 function render_tournament_overview_new(s, container, event) {
 	var elapsedSeconds = Math.floor((Date.now() - LAST_RUN) / 1000);
 
-	if (elapsedSeconds > 20) {
+	if (elapsedSeconds > 10) {
 		CURRENT_INDEX++;
 		LAST_RUN = Date.now();
 	}
@@ -2391,7 +2391,7 @@ function update(err, s, event) {
 	// If nothing has changed we can skip painting
 	var cur_event_hash = hash(s.settings, event);
 	if (utils.deep_equal(cur_event_hash, _last_painted_hash)) {
-		if (style === 'tournament_overview_new' && Math.floor((Date.now() - LAST_RUN) / 1000) > 20) {
+		if (style === 'tournament_overview_new' && Math.floor((Date.now() - LAST_RUN) / 1000) > 10) {
 			// do not return for overview_new if elapsed time is too big
 		} else {
             return;
