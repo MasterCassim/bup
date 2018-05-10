@@ -456,7 +456,8 @@ function render_tournament_overview_new(s, container, event) {
         ),
     });
     uiu.el(tr, 'td', {
-    	style: 'colspan: 7;align: center;'
+    	'colspan': 7,
+		'align': 'center'
 	}, 'Anstehende Spiele');
 
 	event.matches.forEach(function(match) {
