@@ -493,6 +493,7 @@ var i18n_en = {
 'displaymode|dsm2018': 'DSM2018 (VK)',
 'displaymode|dsm2018-small': 'DSM2018 (VK) - Small',
 'displaymode|tournament_overview_new': 'tournament overview with upcoming matches',
+'displaymode|tournament_overview_plus': 'tournament overview++',
 'displaymode|oncourt': 'court score',
 'displaymode|international': 'international',
 'displaymode|teamcourt': 'team display',

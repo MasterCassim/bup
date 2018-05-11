@@ -494,6 +494,7 @@ var i18n_de = {
 'displaymode|dsm2018': 'DSM2018 (VK)',
 'displaymode|dsm2018-small': 'DSM2018 (VK) - Small',
 'displaymode|tournament_overview_new': 'Turnier-Übersicht mit nächsten Spielen',
+'displaymode|tournament_overview_plus': 'Turnier-Übersicht++',
 'displaymode|oncourt': 'Feld-Punktzahl',
 'displaymode|international': 'International',
 'displaymode|teamcourt': 'Mannschaftskampf',
