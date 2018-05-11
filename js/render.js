@@ -123,6 +123,14 @@ function _score_display_set_game(s, game, game_index, is_current) {
 		if (editmode_active) {
 			uiu.$visible(left_input, editmode_score_active);
 		}
+	} else {
+		var left_text = left.children('span');
+		var left_points = 0;
+		_val(left_input, left_points);
+		left_text.text(left_points);
+		if (editmode_active) {
+			uiu.$visible(left_input, editmode_score_active);
+		}
 	}
 
 	var right = $(tr.querySelector('.score_right'));
@@ -142,6 +150,14 @@ function _score_display_set_game(s, game, game_index, is_current) {
 
 		var right_text = right.children('span');
 		var right_points = game.score[s.game.team1_left ? 1 : 0];
+		_val(right_input, right_points);
+		right_text.text(right_points);
+		if (editmode_active) {
+			uiu.$visible(right_input, editmode_score_active);
+		}
+	} else {
+		var right_text = right.children('span');
+		var right_points = 0;
 		_val(right_input, right_points);
 		right_text.text(right_points);
 		if (editmode_active) {
